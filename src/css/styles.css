@@ -8,7 +8,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #737472c4;
-  /* color: #fafafa; */
   line-height: 1.5;
 }
 
@@ -27,7 +26,7 @@ button:hover,
 button:focus {
   background: rgb(49, 131, 98);
 }
-/* #myBtn {
+#myBtn {
   display: none;
   position: fixed;
   bottom: 10px;
@@ -39,7 +38,7 @@ button:focus {
   cursor: pointer;
   padding: 15px;
   border-radius: 50%;
-} */
+}
 input {
   border-radius: 4px;
   margin: 0 auto 0 auto;
@@ -66,18 +65,12 @@ input:focus {
 .load-more {
   display: none;
   margin-top: 16px;
-  /* background: linear-gradient(
-    0deg,
-    rgb(235, 242, 104) 0%,
-    rgb(70, 181, 222) 100%
-  ); */
 }
 
 img {
   display: block;
   height: 30vh;
   object-fit: cover;
-
   min-width: 200px;
   width: 100%;
 }
@@ -122,7 +115,6 @@ p {
 }
 .info-item {
   flex-basis: calc((100%-10%) / 5);
-
   display: flex;
   flex-direction: column;
 }
