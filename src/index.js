@@ -35,4 +35,64 @@ searchFormPhoto.addEventListener('submit', onSubmitPhoto);
 loadMoreBtn.addEventListener('click', onLoadMore);
 
 //  кнопка пошуку фотографій
+async function onSubmitPhoto(e) {
+    e.preventDefault();
+    galleryPhoto.innerHTML = '';
+    loadMoreBtn.style.display = 'none';
+// введена назва картинки в поле пошуку і перевірка на то чи така назва картинки існує
+    // як ні то видає повідомлення (зроблено з використанням бібліотеки notiflix)
+    namePhoto = e.target.elements.searchQuery.value.trim(); 
+    if (!namePhoto) {
+        return Notify.failure(
+'Sorry, the search field cannot be empty. Please enter information to search.'
+        );
+    }
+    const { data } = await searchFormPhoto(namePhoto);
 
+    // створення картки з фотографією
+    cardPhoto(data); 
+    // створення повідомлення
+    mssageinfo(data);
+    // всі зображення знайдені
+    stopSearch(data);
+    // чистка інпуту
+    e.target.reset();
+
+    // кнопка завантаження
+
+    async function onLoadMore() {
+        page += 1;
+        const { data } = await searchPhoto(namePhoto, page, perPage);
+        cardPhoto(data);
+        stopSearch(data);
+        // прокрутка зображення
+        smoothScroll(); 
+    }
+
+} 
+
+// функція для створення картки  
+function cardPhoto(arr) {
+    const markUp = arr.hits
+        .map(el => {
+            return ` <div class="photo-card">
+    <a class="gallery-link" href="${el.largeImageURL}">
+    <img src="${el.webformatURL}" alt="${el.tags}" loading="lazy" />
+    </a>
+    <div class="info">
+    <p class="info-item"><b>Likes</b>${el.likes}
+    </p>
+    <p class="info-item"><b>Views</b>${el.views}
+    </p>
+    <p class="info-item"><b>Comments</b>${el.comments}
+    </p>
+    <p class="info-item"><b>Downloads</b>${el.downloads}
+    </p>
+    </div>
+    </div>`
+        }).join('');
+    galleryPhoto.insertAdjacentHTML('beforeend', markUp);
+    lightbox.refresh();
+}
+
+// функції всіх повідомлень
