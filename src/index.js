@@ -16,7 +16,7 @@ let namePhoto = ' ';
 axios.defaults.baseURL = 'https://pixabay.com/api/';
 
 async function searchPhoto(namePhoto, page = 1, perPage = 40) {
-    const response = await axios('?key=${KEY}&q=${namePhoto}${respAPI}&page=${page}&per_page=${perPage}');
+    const response = await axios(`?key=${KEY}&q=${namePhoto}${respAPI}&page=${page}&per_page=${perPage}`);
     
     return response;
 }
@@ -34,7 +34,7 @@ const loadMoreBtn = document.querySelector('.load-more');
 searchFormPhoto.addEventListener('submit', onSubmitPhoto);
 loadMoreBtn.addEventListener('click', onLoadMore);
 
-//  кнопка пошуку фотографій
+//  кнопка пошуку фотографій і реалізація пагінації.
 async function onSubmitPhoto(e) {
     e.preventDefault();
     galleryPhoto.innerHTML = '';
@@ -47,12 +47,12 @@ async function onSubmitPhoto(e) {
 'Sorry, the search field cannot be empty. Please enter information to search.'
         );
     }
-    const { data } = await searchFormPhoto(namePhoto);
+    const { data } = await searchPhoto(namePhoto);
 
     // створення картки з фотографією
     cardPhoto(data); 
     // створення повідомлення
-    mssageinfo(data);
+    mssageInfo(data);
     // всі зображення знайдені
     stopSearch(data);
     // чистка інпуту
@@ -60,7 +60,10 @@ async function onSubmitPhoto(e) {
 
     // кнопка завантаження
 
-    async function onLoadMore() {
+
+} 
+
+async function onLoadMore() {
         page += 1;
         const { data } = await searchPhoto(namePhoto, page, perPage);
         cardPhoto(data);
@@ -68,8 +71,6 @@ async function onSubmitPhoto(e) {
         // прокрутка зображення
         smoothScroll(); 
     }
-
-} 
 
 // функція для створення картки  
 function cardPhoto(arr) {
@@ -96,3 +97,57 @@ function cardPhoto(arr) {
 }
 
 // функції всіх повідомлень
+function mssageInfo(arr) {
+    if (arr.hits.length === 0) {
+        Notify.warning(
+            'Sorry, there are no images matching your search query. Please try again.'
+        );
+    }
+    if (arr.totalHits !== 0) {
+        Notify.success(`Hooray! We found ${arr.totalHits} images.`)
+    }
+}
+
+function stopSearch(arr) {
+    if (arr.hits.length < 40 && arr.hits.length > 0) {
+        loadMoreBtn.style.display = 'none';
+        Notify.info("We're sorry, but you've reached the end of search results.");
+    }
+    if (arr.hits.length === 40) {
+        loadMoreBtn.style.display = 'block';
+    }
+        
+}
+
+// реалізація плавного переходу
+function smoothScroll() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 3,
+    behavior: 'smooth',
+  });
+}
+// кнопка підняття вверх 
+galleryPhoto.insertAdjacentHTML('beforebegin', `<button id="myBtn" title="Go UP">UP</button>`);
+window.onscroll = function () {
+    scrollFunction();
+};
+
+const myBtn = document.getElementById('myBtn');
+
+function scrollFunction() {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        myBtn.style.display = 'block';
+    } else {
+        myBtn.style.display = 'none';
+    }
+}
+
+myBtn.addEventListener('click', topFunction);
+function topFunction() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+}
